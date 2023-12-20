@@ -10,6 +10,10 @@ poetry init
 cd djchat
 poetry install
 
+# mysql create database websocket
+# ORM生成table
+python manage.py migrate
+
 #確認是否能啟動django
 python manage.py runserver
 
