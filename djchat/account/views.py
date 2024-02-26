@@ -1,5 +1,5 @@
 from django.conf import settings
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,8 +9,27 @@ from rest_framework_simplejwt.views import (TokenObtainPairView,
 from .models import Account
 from .schemas import user_list_docs
 from .serializers import (AccountSerializer, CustomTokenObtainPairSerializer,
-                          JWTCookieTokenRefreshSerializer)
+                          JWTCookieTokenRefreshSerializer, RegisterSerializer)
 
+
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            username = serializer.validated_data["username"]
+
+            forbidden_username = ["admin","root","superuser"]
+            if username is forbidden_username:
+                return Response({"error":" Username not allowed"},status=status.HTTP_409_CONFLICT)
+            
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        
+        errors = serializer.errors
+        if "username" in errors and "non_field_errors" not in errors:
+            return Response({"error":" Username already exists"},status=status.HTTP_409_CONFLICT)
+        
+        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LogOutAPIView(APIView):
     def post(self, request, format =None):

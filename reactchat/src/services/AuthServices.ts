@@ -48,9 +48,22 @@ export function useAuthService(): AuthServiceProps {
             localStorage.setItem("isLoggedIn", "true")
             localStorage.setItem("user_id", user_id)
             setIsLoggedIn(true)
-
             getUserDetails()
 
+        } catch (err: any) {
+            return err.response.status;
+        }
+    }
+
+    const register = async (username: string, password: string) =>{
+        try {
+            const response = await axios.post(
+                "http://127.0.0.1:8000/api/register/", {
+                    username,
+                    password,
+            }, { withCredentials: true }
+            );
+            return response.status
         } catch (err: any) {
             return err.response.status;
         }
@@ -82,6 +95,6 @@ export function useAuthService(): AuthServiceProps {
         }
     }
 
-    return {login, isLoggedIn, logout, refreshAccessToken}
+    return {login, isLoggedIn, logout, refreshAccessToken, register}
    
 }
