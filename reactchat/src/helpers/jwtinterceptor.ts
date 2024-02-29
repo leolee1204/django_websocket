@@ -13,7 +13,7 @@ const useAxiosWithJwtInterceptor = () => {
     },
     async (error) => {
       const originalRequest = error.config;
-      if (error.response.status === 401 || 403) {
+      if (error.response.status === 401 || 403 &&(axios.defaults.withCredentials)) {
         axios.defaults.withCredentials = true;
  
           try {
@@ -28,9 +28,11 @@ const useAxiosWithJwtInterceptor = () => {
             const goLogin = () => navigate("/login");
             goLogin();
             return Promise.reject(refreshError);
+          } finally {
+            axios.defaults.withCredentials = false;
           }
-        
       }
+      return Promise.reject(error);
     }
   );
   return jwtAxios;
