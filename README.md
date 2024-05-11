@@ -14,6 +14,9 @@ poetry install
 # ORM生成table
 python manage.py migrate
 
+# 匯入mysql資料
+mysql -u you_username -p your_database_name < websocket.sql
+
 #確認是否能啟動django
 python manage.py runserver
 
